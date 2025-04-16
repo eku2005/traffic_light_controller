@@ -37,7 +37,6 @@ This project simulates a **Traffic Light Controller** using Verilog. The design 
 ```sh
 iverilog -o traffic_light traffic_light.sv traffic_light_tb.sv
 vvp traffic_light
-gtkwave dump.vcd  # View waveform
 ```
 
 ## 📊 Expected Console Output
