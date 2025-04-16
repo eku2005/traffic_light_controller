@@ -11,7 +11,7 @@ This project simulates a **Traffic Light Controller** using Verilog. The design 
 📂 Traffic_Light_Controller
 ├── traffic_light.sv     # Main Verilog design
 ├── traffic_light_tb.sv  # Testbench for simulation
-├── EPWave.png             # Waveform file (generated after simulation)
+├── EPWave.png           # Waveform file (generated after simulation)
 ├── README.md            # Project documentation
 ```
 
