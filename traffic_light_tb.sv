@@ -1,52 +1,54 @@
-`timescale 1ns/1ps  // Explicit timescale definition
+`timescale 1ns/1ps
 
-module traffic_light_tb;
-    reg clk;
-    reg Sa, Sb;
-    wire Ra, Ga, Ya, Rb, Gb, Yb;
+module tb_traffic_light;
+  // testbench signals
+  reg  clk   = 0;
+  reg  reset = 1;
+  reg  Sa    = 0;
+  reg  Sb    = 0;
+  wire Ra, Ya, Ga;
+  wire Rb, Yb, Gb;
 
-    // Instantiate the DUT (Design Under Test)
-    traffic_light dut (
-        .clk(clk), 
-        .Sa(Sa), 
-        .Sb(Sb), 
-        .Ra(Ra), 
-        .Ga(Ga), 
-        .Ya(Ya), 
-        .Rb(Rb), 
-        .Gb(Gb), 
-        .Yb(Yb)
-    );
+  // instantiate DUT
+  traffic_light_controller dut (
+    .clk   (clk),
+    .reset (reset),
+    .Sa    (Sa),
+    .Sb    (Sb),
+    .Ra    (Ra), .Ya (Ya), .Ga (Ga),
+    .Rb    (Rb), .Yb (Yb), .Gb (Gb)
+  );
 
-    // Clock Generation
-    always #5 clk = ~clk;  // 10ns clock period
+  // clock generator: 10 ns period
+  always #5 clk = ~clk;
 
-    // Simulation Process
-    initial begin
-        // Dump waveform data for EPWave
-        $dumpfile("dump.vcd");
-        $dumpvars(0, traffic_light_tb);
+  // dump waveforms
+  initial begin
+    $dumpfile("traffic.vcd");
+    $dumpvars(0, tb_traffic_light);
+  end
 
-        // Initialize Signals
-        clk = 0;
-        Sa = 0;
-        Sb = 0;
+  // stimulus sequence
+  initial begin
+    // hold reset for 2 cycles
+    #12 reset = 0;
 
-        // Print Header
-        $display("Time | Sa Sb | Ra Ga Ya | Rb Gb Yb");
-        $monitor("Time=%0t | Sa=%b Sb=%b | Ra=%b Ga=%b Ya=%b | Rb=%b Gb=%b Yb=%b", 
-                  $time, Sa, Sb, Ra, Ga, Ya, Rb, Gb, Yb);
+    // after 100 ns, press Sa for one cycle
+    #100 Sa = 1;
+    #10  Sa = 0;
 
-        // Simulate Traffic Light Changes
-        #10 Sa = 1; Sb = 0;  // Case 1
-        #40 Sa = 0; Sb = 0;  // Case 2
-        #30 Sa = 0; Sb = 1;  // Case 3
-        #50 Sa = 0; Sb = 0;  // Case 4
-        #20 Sa = 1; Sb = 1;  // Case 5
-        #50 Sa = 0; Sb = 0;  // Back to default
+    // after another 200 ns, press Sb
+    #200 Sb = 1;
+    #10  Sb = 0;
 
-        // End Simulation
-        #100;
-        $finish;
-    end
+    // finish after some time
+    #300 $finish;
+  end
+
+  // optional console monitor
+  initial begin
+    $monitor("%0t | Sa=%b Sb=%b | A[G=%b Y=%b R=%b] B[G=%b Y=%b R=%b]",
+             $time, Sa, Sb, Ga, Ya, Ra, Gb, Yb, Rb);
+  end
+
 endmodule
